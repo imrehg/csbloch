@@ -1,0 +1,3 @@
+from physicspy import *
+
+l = 852e-9

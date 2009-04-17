@@ -1,0 +1,10 @@
+from physicspy.quantum import *
+
+
+F1 = 4
+F2 = 5
+M1 = 4
+M2 = 5
+
+print  threej(F1,1,F2,-M1,M2-M1,M2)
+
