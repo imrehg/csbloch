@@ -1,0 +1,15 @@
+CsBloch
+-------
+
+Testing code to implement full Bloch-equations treatment of cesium 
+atoms. Relies on Physicspy (and through that on scipy).
+
+
+URLs
+----
+
+Develoment:
+http://github.com/imrehg/csbloch/tree/master
+
+Physicspy:
+http://imrehg.github.com/physicspy
