@@ -1,3 +1,4 @@
+from __future__ import division
 import scipy as sp
 from scipy.linalg import *
 import pylab as pl
