@@ -61,7 +61,30 @@ def timeseries(tseries, params, q0):
         p2[i] = temp[1]
         p3[i] = temp[2]
     return (t, p1, p2, p3)
-    
+
+def spectra(detseries, laser, params, q0):
+    ''' Spectra calculation '''
+    (detstart, detend, detnum) = detseries
+    det = sp.linspace(detstart, detend , detnum)
+    p1 = sp.zeros((len(det),1))
+    p2 = sp.zeros((len(det),1))
+    p3 = sp.zeros((len(det),1))
+    (G,G1,G2,laser1,laser2) = params
+    (Om1, d1, gg1) = laser1
+    (Om2, d2, gg2) = laser2
+    longt = 2000
+    for i in range(0, len(det)):
+        if laser == 1 :
+            laser1 = (Om1, det[i], gg1)
+        else :
+            laser2 = (Om2, det[i], gg2)
+        params = (G,G1,G2,laser1,laser2)
+        temp = sp.dot(expm(Mmat(params) * longt), q0)
+        p1[i] = temp[0]
+        p2[i] = temp[1]
+        p3[i] = temp[2]
+    return (det, p1, p2, p3)
+
 laser1 = (Om1, d1, gg1)
 laser2 = (Om2, d2, gg2)
 params = (G,G1,G2,laser1,laser2)
@@ -75,4 +98,11 @@ pl.xlabel('time')
 pl.ylabel('Population')
 pl.ylim([0,1])
 pl.legend(loc="best")
+pl.show()
+
+(det, p1, p2, p3) = spectra((-10,10,401), 1, params, q0)
+pl.plot(det, p3, 'r-', label='Excited state 3')
+pl.xlabel('time')
+pl.ylabel('Population')
+pl.ylim([0, max(p3)*1.1])
 pl.show()
