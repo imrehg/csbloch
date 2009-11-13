@@ -100,8 +100,9 @@ def timeseries(tseries, params, q0):
     p2 = sp.zeros((len(t),1))
     p3 = sp.zeros((len(t),1))
     # Time evolution
+    Mnow = Mmat(params)
     for i in range(0, len(t)):
-        temp = sp.dot(expm(Mmat(params) * t[i]), q0)
+        temp = sp.dot(expm(Mnow * t[i]), q0)
         p1[i] = temp[0]
         p2[i] = temp[1]
         p3[i] = temp[2]
