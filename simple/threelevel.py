@@ -2,6 +2,64 @@ from __future__ import division
 import scipy as sp
 from scipy.linalg import *
 
+# Helper functions
+def conn(j, k, n):
+    ''' Iterate through the non-diagonal elements '''
+    if (j == k) :
+        return -1
+    if (j > k):
+        j, k = k, j
+    out = -1
+    for temp in range(0, j+1):
+        out += (n - 1) - temp
+    out -= (n - 1) - k
+    return out
+
+def xv(j, k, n):
+    ''' Find x(j, k) serial number in list:
+    Order: first non diagonal elements (0,0)...(n,n) then off-diagonals
+    '''
+    if (j >= n) | (k >= n):
+        return -1
+    if (j == k):
+        # Diagonal elements
+        return j
+    else :
+        # Coherence, real part
+        out = conn(j, k, n) + n
+    return out
+
+def yv(j, k, n):
+    ''' Find y(j, k) serial number in list:
+    Order: Off-diagonals only, after x values.
+    
+    Return:
+    (y, mul) :  y = -1 if invalid (j, k) values
+                mul = -1 if (j > k), otherwise =1
+    '''
+    if (j >= n) | (k >= n):
+        return (-1, -1)
+    if (j == k):
+        # Diagonal elements
+        return (-1, -1)
+    else :
+        # Coherence, imaginary part
+        multi = 1
+        if (j > k):
+            multi = -1
+        out = conn(j, k, n) + 2 * n
+    return (out, multi)
+
+def ChooseMat(j, k, n, Choose):
+    ''' Choose an element from a matrix in off-diagonal elements order
+    Useful to handle state-state interactions
+    '''
+    iter = conn(j, k, n)
+    if (iter < 0):
+        return 0
+    else:
+        return Choose[iter]
+
 def Mmat(params):
     ''' To evolve the density matrix
     
@@ -23,19 +81,67 @@ def Mmat(params):
     (G,G1,G2,laser1,laser2) = params
     (Om1, d1, gg1) = laser1
     (Om2, d2, gg2) = laser2
+    # States:
+    n = 3
+    # ChooseMat: offdiagonals
+    Om = [0, Om1/2, Om2/2]
+    A = [0, G1, G2]
+    Detu = [d1-d2, d1, d2]
+    # Diagonals
+    # Gamma - total decay
+    Gam = [0, 0, G]
+    # Big gamma, width of states
+    GM = sp.array([0, 0, G])
+    # Laser linewidth
+    lw = [gg1+gg2, gg1, gg2]
+    
     # Matrix elements: x11, x22, x33, x12, x13, x23, y12, y13, y23
-    M = sp.array([[0, 0, G1, 0, 0, 0, 0, Om1, 0],
-                  [0, 0, G2, 0, 0, 0, 0, 0, Om2],
-                  [0, 0, -G, 0, 0, 0, 0, -Om1, -Om2],
-                  
-                  [0, 0, 0, -(gg1+gg2)/2, 0, 0, (d1-d2), Om2/2, Om1/2],
-                  [0, 0, 0, 0, -(G1+gg1)/2, 0, Om2/2, d1, 0],
-                  [0, 0, 0, 0, 0, -(G2+gg2)/2, -Om1/2, 0, d2],
-                                 
-                  [0, 0, 0, -(d1-d2), -Om2/2, Om1/2, -(gg1+gg2)/2, 0, 0],
-                  [-Om1/2, 0, Om1/2, -Om2/2, -d1, 0, 0, -(G1+gg1)/2, 0],
-                  [0, -Om2/2, Om2/2, -Om1/2, 0, -d2, 0, 0, -(G2+gg2)/2]])
-    return M
+    Mm = sp.zeros((n**2, n**2))
+
+    # Diagonal elements
+    for j in range(0, n):
+        for l in range(0, 3):
+            y, mul = yv(j, l, n)
+            if (y > -1):
+                M = ChooseMat(l, j, n, Om)
+                Mm[j, y] += 2 * M * mul
+            if (j < l):
+                Mm[j, l] += ChooseMat(j, l, n, A)
+        Mm[j, j] += -Gam[j]
+
+    # Off-diagonal, real part 
+    for j in range(0, n):
+        for k in range(j+1,n):
+            x = xv(j, k, n)
+            for l in range(0, n):
+                y, mul = yv(l, k, n)
+                if (y > -1):
+                    M = ChooseMat(j, l, n, Om)
+                    Mm[x, y] += -M * mul
+                y, mul = yv(j, l, n)
+                if (y > -1):
+                    M = ChooseMat(l, k, n, Om)
+                    Mm[x, y] += M * mul
+            Mm[x, x] += -(GM[j] + GM[k] + ChooseMat(j, k, n, lw)) / 2
+            y, mul = yv(j, k, n)
+            if (y > -1):
+                Mm[x, y] += mul * ChooseMat(j, k, n, Detu)
+
+    # Off-diagonal, imaginary part 
+    for j in range(0, n):
+        for k in range(j+1,n):
+            y, mul = yv(j, k, n)
+            for l in range(0, n):
+                x = xv(l, k, n)
+                M = ChooseMat(j, l, n, Om)
+                Mm[y, x] += M
+                x = xv(j, l, n)
+                M = ChooseMat(l, k, n, Om)
+                Mm[y, x] += -M
+            Mm[y, y] += -(GM[j] + GM[k] + ChooseMat(j, k, n, lw)) / 2
+            x = xv(j, k, n)
+            Mm[y, x] += - ChooseMat(j, k, n, Detu)
+    return Mm
 
 def timeseries(tseries, params, q0):
     ''' Time-dependent state evolution
