@@ -1,44 +1,6 @@
 from __future__ import division
 import scipy as sp
 from scipy.linalg import *
-import pylab as pl
-
-##Level structure
-##
-##     3
-##    ---
-##
-##
-##       ---
-## ---    2
-##  1
-
-#### Example settings
-## Excited state lifetimes
-## Total should be 1, everything else is scaled with it
-#G = 1.0 * 2
-#G1 = 1 * G
-#G2 = G - G1
-## Rabi frequencies (untis of G)
-#Om1 = 10 * G
-#Om2 = 0 * G
-## Laser linewidths (units of G)
-#gg1 = 0 * G
-#gg2 = gg1
-## Detuning (Units of G)
-#d1 = 0
-#d2 = -1/8
-## Starting density matrix elements
-## Matrix elements: x11, x22, x33, x12, x13, x23, y12, y13, y23
-## x11, x22, x33 (meaning: q0[0:3]) are the populations 
-#q0 = sp.zeros((9,1))
-## Start in level 1
-#q0[0] = 1
-#
-## Make standard parameters variable
-#laser1 = (Om1, d1, gg1)
-#laser2 = (Om2, d2, gg2)
-#params = (G,G1,G2,laser1,laser2)
 
 def Mmat(params):
     ''' To evolve the density matrix
@@ -152,27 +114,3 @@ def spectra(detseries, laser, params, q0):
         p2[i] = temp[1]
         p3[i] = temp[2]
     return (det, p1, p2, p3)
-
-
-#### Example time evolution
-## (t, p1, p2, p3) = timeseries((0,20,101),params, q0)
-## print "Min: ", min(min(p1),min(p2),min(p2))
-## print "Max: ", max(max(p1),max(p2),max(p2))
-## pl.plot(t, p1, 'b--', label='Ground state 1')
-## pl.plot(t, p2, 'g-.', label='Ground state 2')
-## pl.plot(t, p3, 'r-', label='Excited state 3')
-## pl.xlabel('time')
-## pl.ylabel('Population')
-## pl.ylim([0,1])
-## pl.legend(loc="best")
-## pl.show()
-
-#### Example spectrum: Spontaneous emission ~ p3
-## (det, p1, p2, p3) = spectra((-10,10,401), 1, params, q0)
-## pl.plot(det, p1, 'b--', label='Ground state 1')
-## pl.plot(det, p2, 'g-.', label='Ground state 2')
-## pl.plot(det, p3, 'r-', label='Excited state 3')
-## pl.xlabel('time')
-## pl.ylabel('Population')
-## pl.legend(loc="best")
-## pl.show()
