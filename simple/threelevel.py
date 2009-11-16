@@ -151,7 +151,7 @@ def timeseries(tseries, params, q0):
     params = parameters in the standard format
     q0 = starting configuration
     
-    Outout:
+    Output:
     (t, p1, p2, p3) : vectors of times and the three populations
 
     Example:
