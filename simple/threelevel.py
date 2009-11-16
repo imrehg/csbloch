@@ -143,6 +143,42 @@ def Mmat(params):
             Mm[y, x] += - ChooseMat(j, k, n, Detu)
     return Mm
 
+def MmatSpecial(params):
+    ''' To evolve the density matrix, simplified Lambda-system treatment
+    
+    Input:
+    params : parameters in a standard format =>
+      laser1 = (Om1, d1, gg1)
+      laser2 = (Om2, d2, gg2)
+      params = (G,G1,G2,laser1,laser2)
+    
+    Output:
+    M = density matrix evolving matrix, that is
+    dq /dt = M * q
+    
+    It can be used to calculate complete time evolution.
+    E.g. if it is time independent:
+    q(t) = q(0) expm(M t) 
+    where expm() is the "matrix exponential"
+    '''
+    (G,G1,G2,laser1,laser2) = params
+    (Om1, d1, gg1) = laser1
+    (Om2, d2, gg2) = laser2
+    # Matrix elements: x11, x22, x33, x12, x13, x23, y12, y13, y23
+    # xjj = populations; (xjk, yjk) = coherences (real, imaginary) parts
+    M = sp.array([[0, 0, G1, 0, 0, 0, 0, Om1, 0],
+                  [0, 0, G2, 0, 0, 0, 0, 0, Om2],
+                  [0, 0, -G, 0, 0, 0, 0, -Om1, -Om2],
+                  
+                  [0, 0, 0, -(gg1+gg2)/2, 0, 0, (d1-d2), Om2/2, Om1/2],
+                  [0, 0, 0, 0, -(G+gg1)/2, 0, Om2/2, d1, 0],
+                  [0, 0, 0, 0, 0, -(G+gg2)/2, -Om1/2, 0, d2],
+                                 
+                  [0, 0, 0, -(d1-d2), -Om2/2, Om1/2, -(gg1+gg2)/2, 0, 0],
+                  [-Om1/2, 0, Om1/2, -Om2/2, -d1, 0, 0, -(G+gg1)/2, 0],
+                  [0, -Om2/2, Om2/2, -Om1/2, 0, -d2, 0, 0, -(G+gg2)/2]])
+    return M
+
 def timeseries(tseries, params, q0):
     ''' Time-dependent state evolution
         
