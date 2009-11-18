@@ -63,6 +63,8 @@ def ChooseMat(j, k, n, Choose):
 def Mmat(params):
     ''' To evolve the density matrix
     
+    Mmat(params)
+
     Input:
     params : parameters in a standard format =>
       laser1 = (Om1, d1, gg1)
@@ -146,6 +148,8 @@ def Mmat(params):
 def MmatSpecial(params):
     ''' To evolve the density matrix, simplified Lambda-system treatment
     
+    MmatSpecial(params)
+
     Input:
     params : parameters in a standard format =>
       laser1 = (Om1, d1, gg1)
