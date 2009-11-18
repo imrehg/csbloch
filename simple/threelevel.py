@@ -88,7 +88,7 @@ def Mmat(params):
     # ChooseMat: offdiagonals
     Om = [0, Om1/2, Om2/2]
     A = [0, G1, G2]
-    Detu = [d1-d2, d1, d2]
+    Detu = [(d1-d2), d1, d2]
     # Diagonals
     # Gamma - total decay
     Gam = [0, 0, G]
