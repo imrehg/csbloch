@@ -32,7 +32,7 @@ def xv(j, k, n):
 def yv(j, k, n):
     ''' Find y(j, k) serial number in list:
     Order: Off-diagonals only, after x values.
-    
+
     Return:
     (y, mul) :  y = -1 if invalid (j, k) values
                 mul = -1 if (j > k), otherwise =1
@@ -62,7 +62,7 @@ def ChooseMat(j, k, n, Choose):
 
 def Mmat(params):
     ''' To evolve the density matrix
-    
+
     Mmat(params)
 
     Input:
@@ -70,14 +70,14 @@ def Mmat(params):
       laser1 = (Om1, d1, gg1)
       laser2 = (Om2, d2, gg2)
       params = (G,G1,G2,laser1,laser2)
-    
+
     Output:
     M = density matrix evolving matrix, that is
     dq /dt = M * q
-    
+
     It can be used to calculate complete time evolution.
     E.g. if it is time independent:
-    q(t) = q(0) expm(M t) 
+    q(t) = q(0) expm(M t)
     where expm() is the "matrix exponential"
     '''
     (G,G1,G2,laser1,laser2) = params
@@ -96,7 +96,7 @@ def Mmat(params):
     GM = sp.array([0, 0, G])
     # Laser linewidth
     lw = [gg1+gg2, gg1, gg2]
-    
+
     # Matrix elements: x11, x22, x33, x12, x13, x23, y12, y13, y23
     Mm = sp.zeros((n**2, n**2))
 
@@ -111,7 +111,7 @@ def Mmat(params):
                 Mm[j, l] += ChooseMat(j, l, n, A)
         Mm[j, j] += -Gam[j]
 
-    # Off-diagonal, real part 
+    # Off-diagonal, real part
     for j in range(0, n):
         for k in range(j+1,n):
             x = xv(j, k, n)
@@ -129,7 +129,7 @@ def Mmat(params):
             if (y > -1):
                 Mm[x, y] += mul * ChooseMat(j, k, n, Detu)
 
-    # Off-diagonal, imaginary part 
+    # Off-diagonal, imaginary part
     for j in range(0, n):
         for k in range(j+1,n):
             y, mul = yv(j, k, n)
@@ -147,7 +147,7 @@ def Mmat(params):
 
 def MmatSpecial(params):
     ''' To evolve the density matrix, simplified Lambda-system treatment
-    
+
     MmatSpecial(params)
 
     Input:
@@ -155,14 +155,14 @@ def MmatSpecial(params):
       laser1 = (Om1, d1, gg1)
       laser2 = (Om2, d2, gg2)
       params = (G,G1,G2,laser1,laser2)
-    
+
     Output:
     M = density matrix evolving matrix, that is
     dq /dt = M * q
-    
+
     It can be used to calculate complete time evolution.
     E.g. if it is time independent:
-    q(t) = q(0) expm(M t) 
+    q(t) = q(0) expm(M t)
     where expm() is the "matrix exponential"
     '''
     (G,G1,G2,laser1,laser2) = params
@@ -173,11 +173,11 @@ def MmatSpecial(params):
     M = sp.array([[0, 0, G1, 0, 0, 0, 0, Om1, 0],
                   [0, 0, G2, 0, 0, 0, 0, 0, Om2],
                   [0, 0, -G, 0, 0, 0, 0, -Om1, -Om2],
-                  
+
                   [0, 0, 0, -(gg1+gg2)/2, 0, 0, (d1-d2), Om2/2, Om1/2],
                   [0, 0, 0, 0, -(G+gg1)/2, 0, Om2/2, d1, 0],
                   [0, 0, 0, 0, 0, -(G+gg2)/2, -Om1/2, 0, d2],
-                                 
+
                   [0, 0, 0, -(d1-d2), -Om2/2, Om1/2, -(gg1+gg2)/2, 0, 0],
                   [-Om1/2, 0, Om1/2, -Om2/2, -d1, 0, 0, -(G+gg1)/2, 0],
                   [0, -Om2/2, Om2/2, -Om1/2, 0, -d2, 0, 0, -(G+gg2)/2]])
@@ -185,12 +185,12 @@ def MmatSpecial(params):
 
 def timeseries(tseries, params, q0):
     ''' Time-dependent state evolution
-        
+
     Input parameters:
     tseries = (tstart, tend, tnum) : time points to check (units of 1/G)
     params = parameters in the standard format
     q0 = starting configuration
-    
+
     Output:
     (t, p1, p2, p3) : vectors of times and the three populations
 
@@ -219,13 +219,13 @@ def timeseries(tseries, params, q0):
 
 def spectra(detseries, laser, params, q0):
     ''' Spectra calculation
-    
+
     Input parameters:
     detseries = (detstart, detend, detnum) : detunings to check (units of G)
     laser = 1/2 : which laser to scan
     params = parameters in the standard format
     q0 = starting configuration
-    
+
     Outout:
     (det, p1, p2, p3) : vectors of detunings and the three populations
 

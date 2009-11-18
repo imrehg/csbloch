@@ -20,7 +20,7 @@ d1 = 0
 d2 = -1
 # Starting density matrix elements
 # Matrix elements: x11, x22, x33, x12, x13, x23, y12, y13, y23
-# x11, x22, x33 (meaning: q0[0:3]) are the populations 
+# x11, x22, x33 (meaning: q0[0:3]) are the populations
 q0 = sp.zeros((9,1))
 # Start in level 1
 q0[0] = 1
