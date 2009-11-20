@@ -1,4 +1,4 @@
-//¥ú®Ş¹p®g4¯à¶¥¨t²Î¡A®É¶¡¶b°µ¹Ï
+//å…‰æ¢³é›·å°„4èƒ½éšç³»çµ±ï¼Œæ™‚é–“è»¸åšåœ–
 #include <iostream>
 #include <cstdlib>
 #include <cctype>
@@ -9,29 +9,29 @@
 using namespace std;
 #include "dislin.h"
 
-double ReRabi(double &x);//¯ß½Ä¥]µ¸½u¨ç¼Æ(¹ê³¡)
-double ImRabi(double &x);//¯ß½Ä¥]µ¸½u¨ç¼Æ(µê³¡)
-void fun(double ,double ,double ,int );//©Ò»İ¸ÑªºÁp¥ß¤èµ{²Õ
-void solve(double*,double &,int &,double &);//ºtºâªk
+double ReRabi(double &x);//è„ˆè¡åŒ…çµ¡ç·šå‡½æ•¸(å¯¦éƒ¨)
+double ImRabi(double &x);//è„ˆè¡åŒ…çµ¡ç·šå‡½æ•¸(è™›éƒ¨)
+void fun(double ,double ,double ,int );//æ‰€éœ€è§£çš„è¯ç«‹æ–¹ç¨‹çµ„
+void solve(double*,double &,int &,double &);//æ¼”ç®—æ³•
 
 double dx1,dx2,gamma_1,gamma_13,gamma_14,gamma_2,gamma_23,gamma_24,gamma_p,gamma_c;
-//dx1:¦³¯ß½Ä®Éªº¨B¼e¡Cdx2:¨S¦³¯ß½Ä®Éªº¨B¼e¡Cgamma_i¡G¯à¶¥iªº°IÅÜ²v¡Cgamma_ij¡G¯à¶¥i°IÅÜ¨ì¯à¶¥jªº°IÅÜ²v¡C
-//gamma_p©Mgamma_c¬°°òºArelaxation rate¡Agamma_p¼vÅTpopulation¡Agamma_c¼vÅTcoherence
+//dx1:æœ‰è„ˆè¡æ™‚çš„æ­¥å¯¬ã€‚dx2:æ²’æœ‰è„ˆè¡æ™‚çš„æ­¥å¯¬ã€‚gamma_iï¼šèƒ½éšiçš„è¡°è®Šç‡ã€‚gamma_ijï¼šèƒ½éšiè¡°è®Šåˆ°èƒ½éšjçš„è¡°è®Šç‡ã€‚
+//gamma_på’Œgamma_cç‚ºåŸºæ…‹relaxation rateï¼Œgamma_på½±éŸ¿populationï¼Œgamma_cå½±éŸ¿coherence
 double omega_12=1.264428211,omega_13=1.264428211,omega_14=59.02343708,omega_23=0,omega_24=57.75900887,omega_34=57.75900887;
-//omega_ij¬°¯à¶¥i©M¯à¶¥jªº¨¤ÀW²v®t¡C
-double ReH13,ReH14,ReH23,ReH24;//¦U¯à¶¥¤§¶¡ªº©Ô¤ñÀW²v(¹ê³¡)
-double ImH13,ImH14,ImH23,ImH24;//¦U¯à¶¥¤§¶¡ªº©Ô¤ñÀW²v(µê³¡)
-double frequency,peroid,FWHM,peak;//frequency:¸üªi¨¤ÀW²v¡Cperoid¡G¯ß½Ä©P´Á¡CFWHM¡G¯ß½Ä¥b°ª¼e¡Cpeak¡G©Ô¤ñÀW²v³Ì¤j­È
-const int n=16;//n:Áp¥ß¤èµ{¦¡¼Æ¥Ø
-const double pi=3.141592654;//¶ê©P²v
-const double peroid0=10.87827757;//¤wª¾¬Û¦ìªº¯ß½Ä©P´Á
-int interval,interval2;//interval:¦³¯ß½Ä°Ï°ìªº¤À³Î¼Æ(³æ¤@©P´Á)¡Cinterval2:¨S¦³¯ß½Ä°Ï°ìªº¤À³Î¼Æ(³æ¤@©P´Á)
-int numFWHM=5;//intervalªº°Ñ¼Æ
-int totalterm;//®i¶}¶µ¼Æ¥Ø
-double phase;//¬Û¦ì
+//omega_ijç‚ºèƒ½éšiå’Œèƒ½éšjçš„è§’é »ç‡å·®ã€‚
+double ReH13,ReH14,ReH23,ReH24;//å„èƒ½éšä¹‹é–“çš„æ‹‰æ¯”é »ç‡(å¯¦éƒ¨)
+double ImH13,ImH14,ImH23,ImH24;//å„èƒ½éšä¹‹é–“çš„æ‹‰æ¯”é »ç‡(è™›éƒ¨)
+double frequency,peroid,FWHM,peak;//frequency:è¼‰æ³¢è§’é »ç‡ã€‚peroidï¼šè„ˆè¡å‘¨æœŸã€‚FWHMï¼šè„ˆè¡åŠé«˜å¯¬ã€‚peakï¼šæ‹‰æ¯”é »ç‡æœ€å¤§å€¼
+const int n=16;//n:è¯ç«‹æ–¹ç¨‹å¼æ•¸ç›®
+const double pi=3.141592654;//åœ“å‘¨ç‡
+const double peroid0=10.87827757;//å·²çŸ¥ç›¸ä½çš„è„ˆè¡å‘¨æœŸ
+int interval,interval2;//interval:æœ‰è„ˆè¡å€åŸŸçš„åˆ†å‰²æ•¸(å–®ä¸€å‘¨æœŸ)ã€‚interval2:æ²’æœ‰è„ˆè¡å€åŸŸçš„åˆ†å‰²æ•¸(å–®ä¸€å‘¨æœŸ)
+int numFWHM=5;//intervalçš„åƒæ•¸
+int totalterm;//å±•é–‹é …æ•¸ç›®
+double phase;//ç›¸ä½
 
 
-double ReRabi(double &x)//¯ß½Ä¥]µ¸½u¨ç¼Æ(¹ê³¡)¡A°ª´µ¨ç¼Æ*Re[e^{-i*phase}]
+double ReRabi(double &x)//è„ˆè¡åŒ…çµ¡ç·šå‡½æ•¸(å¯¦éƒ¨)ï¼Œé«˜æ–¯å‡½æ•¸*Re[e^{-i*phase}]
 {
   double value=0,time=0,factor=0;
   int i=0;
@@ -45,7 +45,7 @@ double ReRabi(double &x)//¯ß½Ä¥]µ¸½u¨ç¼Æ(¹ê³¡)¡A°ª´µ¨ç¼Æ*Re[e^{-i*phase}]
   return peak*value;
 }
 
-double ImRabi(double &x)//¯ß½Ä¥]µ¸½u¨ç¼Æ(µê³¡)¡A°ª´µ¨ç¼Æ*Im[e^{-i*phase}]
+double ImRabi(double &x)//è„ˆè¡åŒ…çµ¡ç·šå‡½æ•¸(è™›éƒ¨)ï¼Œé«˜æ–¯å‡½æ•¸*Im[e^{-i*phase}]
 {
   double value=0,time=0,factor=0;
   int i=0;
@@ -61,8 +61,8 @@ double ImRabi(double &x)//¯ß½Ä¥]µ¸½u¨ç¼Æ(µê³¡)¡A°ª´µ¨ç¼Æ*Im[e^{-i*phase}]
 
 void fun(long double k[],long double y[],double x,int i)
 {
-//¨Ì§Ç¬°rho_11,rho_22,rho_33,rho_44,Im[rho_21],Re[rho_21],Im[rho_31],Re[rho_31],Im[rho_41],Re[rho_41],Im[rho_32],Re[rho_32],
-//Im[rho_42],Re[rho_42],Im[rho_43],Re[rho_43]¤§¤èµ{¦¡
+//ä¾åºç‚ºrho_11,rho_22,rho_33,rho_44,Im[rho_21],Re[rho_21],Im[rho_31],Re[rho_31],Im[rho_41],Re[rho_41],Im[rho_32],Re[rho_32],
+//Im[rho_42],Re[rho_42],Im[rho_43],Re[rho_43]ä¹‹æ–¹ç¨‹å¼
   k[i*n]=(-ReH13*y[6]-ReH14*y[8]-ImH13*y[7]-ImH14*y[9]-gamma_1*y[0])/i;
   k[i*n+1]=(-ReH23*y[10]-ReH24*y[12]-ImH23*y[11]-ImH24*y[13]-gamma_2*y[1])/i;
   k[i*n+2]=(ReH13*y[6]+ReH23*y[10]+ImH13*y[7]+ImH23*y[11]+gamma_13*y[0]+gamma_23*y[1]-0.5*gamma_p*(y[3]-y[4]))/i;
@@ -85,16 +85,16 @@ void solve(double *result,double &x,int &t,double &dx)
 {
   long double factor[totalterm*n],mid[n];
   double next[n]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  for(int i=0;i<n;i++)//Àx¦st_n
+  for(int i=0;i<n;i++)//å„²å­˜t_n
     factor[i]=*(result+t*n+i);
 
-  for(int i=1;i<totalterm;i++)//¨ú±o«Y¼Æ
+  for(int i=1;i<totalterm;i++)//å–å¾—ä¿‚æ•¸
   {
     for(int j=0;j<n;j++)
       mid[j]=factor[(i-1)*n+j];
     fun(factor,mid,x,i);
   }
-  for(int j=0;j<n;j++)//¨Dt_n+1
+  for(int j=0;j<n;j++)//æ±‚t_n+1
     for(int k=0;k<totalterm;k++)
       next[j]+=factor[k*n+j]*pow(dx,k);
 
@@ -104,17 +104,17 @@ void solve(double *result,double &x,int &t,double &dx)
 
 int main()
 {
-  fstream file1,file2;//file1¡G¬ö¿ı­pºâªº°Ñ¼Æ¡Cfile2:¬ö¿ı¼Æ¾Ú
+  fstream file1,file2;//file1ï¼šç´€éŒ„è¨ˆç®—çš„åƒæ•¸ã€‚file2:ç´€éŒ„æ•¸æ“š
   file1.open("input.txt", ios::out | ios::trunc);
   file2.open("data.txt", ios::out | ios::trunc);
   file1.precision(10);  
   file2.precision(10); 
 
-  double endvalue,x0=0,y0[n]={0,0,0.5,0.5,0,0,0,0,0,0,0,0,0,0,0,0};//x0:®É¶¡¡Cy0[n]:±K«×¯x°}°_©l±ø¥ó
+  double endvalue,x0=0,y0[n]={0,0,0.5,0.5,0,0,0,0,0,0,0,0,0,0,0,0};//x0:æ™‚é–“ã€‚y0[n]:å¯†åº¦çŸ©é™£èµ·å§‹æ¢ä»¶
   int factor,maxpower,numpluse;
-//facter¡Ginterval2ªº°Ñ¼Æ¡Cinterval_peroid:µe¹ÏªºÂI¼Æ¡Cmaxpower:³Ì¤jªº®i¶}¶µ¦¸¤è¼Æ¡Cnumofpulse:°ò¥»¯ß½Ä¼Æ
+//facterï¼šinterval2çš„åƒæ•¸ã€‚interval_peroid:ç•«åœ–çš„é»æ•¸ã€‚maxpower:æœ€å¤§çš„å±•é–‹é …æ¬¡æ–¹æ•¸ã€‚numofpulse:åŸºæœ¬è„ˆè¡æ•¸
 
-//¤U­±¥i¥H§ïÅÜ­pºâªº°Ñ¼Æ  
+//ä¸‹é¢å¯ä»¥æ”¹è®Šè¨ˆç®—çš„åƒæ•¸  
   frequency=0*2*pi;
   FWHM=0.00085;
   peak=37.6834589;
@@ -128,11 +128,11 @@ int main()
   numofpulse=1000;
   interval=200;
   factor=50;
-  const int nplot=5;//¼g¤Jfile2ªº¨ç¼ÆÁ`¼Æ¥Ø¡A
-  int line[4]={0,1,2,3};//¨ç¼Æªº¦ì¸m¡Cex:0¡Grho_11¡A1:rho_22  
-  int const cutofnumber=1050;//²×¤îªº¯ß½Ä¼Æ
-  double phase0=0*pi/180.0;//¬Û¦ì
-//§ïÅÜ­pºâªº°Ñ¼Æµ²§ô
+  const int nplot=5;//å¯«å…¥file2çš„å‡½æ•¸ç¸½æ•¸ç›®ï¼Œ
+  int line[4]={0,1,2,3};//å‡½æ•¸çš„ä½ç½®ã€‚ex:0ï¼šrho_11ï¼Œ1:rho_22  
+  int const cutofnumber=1050;//çµ‚æ­¢çš„è„ˆè¡æ•¸
+  double phase0=0*pi/180.0;//ç›¸ä½
+//æ”¹è®Šè¨ˆç®—çš„åƒæ•¸çµæŸ
 
   int maxinterval;
   interval2=peroid*factor;//
@@ -171,7 +171,7 @@ int main()
   for (int i=0;i<n;i++)
     *(presult+i)=*(presult+interval*n+i);
 
-  while(x0<numpulse*peroid)//¦¹¦^°é­pºâ¦Ü°ò¥»¯ß½Ä¼Æ
+  while(x0<numpulse*peroid)//æ­¤å›åœˆè¨ˆç®—è‡³åŸºæœ¬è„ˆè¡æ•¸
   {
     for(int j=0;j<interval2;j++)
     {
@@ -205,7 +205,7 @@ int main()
 
 
   int FLAG=1;
-  while(FLAG==1)//­pºâ¦Ü²Å¦X°±¤î±ø¥ó
+  while(FLAG==1)//è¨ˆç®—è‡³ç¬¦åˆåœæ­¢æ¢ä»¶
   {
     value_0=value_1;
     value_1=1;

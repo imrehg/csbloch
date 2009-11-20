@@ -1,4 +1,4 @@
-//CW¹p®g¤T¯à¶¥¨t²Î
+//CWé›·å°„ä¸‰èƒ½éšç³»çµ±
 #include <iostream>
 #include <cstdlib>
 #include <cctype>
@@ -9,18 +9,18 @@
 using namespace std;
 
 
-//¯à¶¥i»P¯à¶¥j¤§¶¡ªº©Ô¤ñÀW²v
-void fun(double ,double ,double ,int );//Áp¥ß¤èµ{¦¡
-void solve(double*,double &,int &);//ºtºâªk
+//èƒ½éšièˆ‡èƒ½éšjä¹‹é–“çš„æ‹‰æ¯”é »ç‡
+void fun(double ,double ,double ,int );//è¯ç«‹æ–¹ç¨‹å¼
+void solve(double*,double &,int &);//æ¼”ç®—æ³•
 
-//¯à¶¥a=¯à¶¥1¡A¯à¶¥b=¯à¶¥2¡A¯à¶¥c=¯à¶¥3
+//èƒ½éša=èƒ½éš1ï¼Œèƒ½éšb=èƒ½éš2ï¼Œèƒ½éšc=èƒ½éš3
 double gamma_a,gamma_1,gamma_2,gamma_ab,gamma_ac,rabi_ab,rabi_ac,dx,detuning_ab,detuning_ac;
-//gamma_i:¯à¶¥1¤§°IÅÜ²v gamma_ij:¯à¶¥i°IÅÜ¨ì¯à¶¥j¤§°IÅÜ²v¡Crabi_ij:©Ô¤ñÀW²v(¤£¦Ò¼{¨â­Ó¹p®g¤§¶µ¦ì®t)¡Cdetuning_ij¡GÂ÷½Õ¶q
-double ReH12,ReH13,ImH12,ImH13;//©Ô¤ñÀW²v(¥ú·½©Òµ¹¡A¦Ò¼{¨â­Ó¹p®g¤§¶µ¦ì®t)
-const int n=9;//Áp¥ß¤èµ{¦¡¼Æ¥Ø
-int nplot;//§Æ±æ¿é¥Xªº¤èµ{¦¡¼Æ¥Ø
-int interval;//®É¶¡¤À³Îªº°Ï¶ô¼Æ
-int totalterm;//®i¶}ªº¶µ¼Æ¥Ø
+//gamma_i:èƒ½éš1ä¹‹è¡°è®Šç‡ gamma_ij:èƒ½éšiè¡°è®Šåˆ°èƒ½éšjä¹‹è¡°è®Šç‡ã€‚rabi_ij:æ‹‰æ¯”é »ç‡(ä¸è€ƒæ…®å…©å€‹é›·å°„ä¹‹é …ä½å·®)ã€‚detuning_ijï¼šé›¢èª¿é‡
+double ReH12,ReH13,ImH12,ImH13;//æ‹‰æ¯”é »ç‡(å…‰æºæ‰€çµ¦ï¼Œè€ƒæ…®å…©å€‹é›·å°„ä¹‹é …ä½å·®)
+const int n=9;//è¯ç«‹æ–¹ç¨‹å¼æ•¸ç›®
+int nplot;//å¸Œæœ›è¼¸å‡ºçš„æ–¹ç¨‹å¼æ•¸ç›®
+int interval;//æ™‚é–“åˆ†å‰²çš„å€å¡Šæ•¸
+int totalterm;//å±•é–‹çš„é …æ•¸ç›®
 
 
 void fun(long double k[],long double y[],double x,int i)
@@ -41,17 +41,17 @@ void solve(double *result,double &x,int &t)
 {
 
   long double factor[totalterm*n],mid[n];
-  for(int i=0;i<n;i++)//Àx¦st_n
+  for(int i=0;i<n;i++)//å„²å­˜t_n
     factor[i]=*(result+t*n+i);
 
-  for(int i=1;i<totalterm;i++)//¨ú±o«Y¼Æ
+  for(int i=1;i<totalterm;i++)//å–å¾—ä¿‚æ•¸
   {
     for(int j=0;j<n;j++)
       mid[j]=factor[(i-1)*n+j];
     fun(factor,mid,x,i);
   }
 
-  for(int j=0;j<n;j++)//¨Dt_n+1
+  for(int j=0;j<n;j++)//æ±‚t_n+1
     for(int k=0;k<totalterm;k++)
       *(result+(t+1)*n+j)+=factor[k*n+j]*pow(dx,k);
 
@@ -61,10 +61,10 @@ int main()
 {
   int maxpower;
   double phase;
-  fstream file1,file2;//file1:¬ö¿ı¿é¤Jªº°Ñ¼Æ¡Cfile2://¬ö¿ı­pºâµ²ªG
+  fstream file1,file2;//file1:ç´€éŒ„è¼¸å…¥çš„åƒæ•¸ã€‚file2://ç´€éŒ„è¨ˆç®—çµæœ
   file1.open("input.txt", ios::out | ios::trunc);
   file2.open("data.txt", ios::out | ios::trunc);
-  double endvalue,x0=0,y0[n]={0,0.5,0.5,0,0,0,0,0,0};//endcalue:­pºâºI¤î®É¶¡¡Cx0:®É¶¡¡Cy0[n]¡G±K«×¯x°}°_©l±ø¥ó
+  double endvalue,x0=0,y0[n]={0,0.5,0.5,0,0,0,0,0,0};//endcalue:è¨ˆç®—æˆªæ­¢æ™‚é–“ã€‚x0:æ™‚é–“ã€‚y0[n]ï¼šå¯†åº¦çŸ©é™£èµ·å§‹æ¢ä»¶
   
   cout<<"input rabifrequency_ab and rabifrequency_ac"<<endl;
   cin>>rabi_ab>>rabi_ac;
@@ -98,7 +98,7 @@ int main()
   file1 <<"rabi_ab="<<rabi_ab<<"  rabi_ac="<<rabi_ac<<"  phase="<<phase<<"  gamma_a="<<gamma_a<<endl;
 	
   totalterm=maxpower+1;
-  double *presult = new double [(interval+1)*n];//©Ò¦³®É¶¡ÂIªº¼Æ­È¦s©ó¦¹«ü¼Ğ
+  double *presult = new double [(interval+1)*n];//æ‰€æœ‰æ™‚é–“é»çš„æ•¸å€¼å­˜æ–¼æ­¤æŒ‡æ¨™
     if(!presult)
       exit(1);
 
