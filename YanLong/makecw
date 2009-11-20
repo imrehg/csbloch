@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Making: CW-time"
+g++ CW-time-utf8.cpp -o CW-time
