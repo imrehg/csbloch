@@ -25,16 +25,16 @@ int totalterm;//展開的項數目
 
 void fun(long double k[],long double y[],double x,int i)
 {
-  k[i*n]=(-gamma_a*y[0]-2*(ReH12*y[3]+ReH13*y[5]+ImH12*y[4]+ImH13*y[6]))/i;
-  k[i*n+1]=(gamma_ab*y[0]-0.5*gamma_1*(y[1]-y[2])+2*(ReH12*y[3]+ImH12*y[4]))/i;
-  k[i*n+2]=(gamma_ac*y[0]-0.5*gamma_1*(y[2]-y[1])+2*(ReH13*y[5]+ImH13*y[6]))/i;
-  k[i*n+3]=(-0.5*gamma_a*y[3]-detuning_ac*y[4]+ReH12*(y[0]-y[1])-ReH13*y[8]+ImH13*y[7])/i;
-  k[i*n+4]=(-0.5*gamma_a*y[4]+detuning_ac*y[3]+ImH12*(y[0]-y[1])-ReH13*y[7]-ImH13*y[8])/i;
-  k[i*n+5]=(-0.5*gamma_a*y[5]-detuning_ab*y[6]+ReH13*(y[0]-y[2])-ReH12*y[8]-ImH12*y[7])/i;
-  k[i*n+6]=(-0.5*gamma_a*y[6]+detuning_ab*y[5]+ImH13*(y[0]-y[2])+ReH12*y[7]-ImH12*y[8])/i;
-  k[i*n+7]=(-0.5*gamma_2*y[7]-(detuning_ac-detuning_ab)*y[8]+ReH13*y[4]-ReH12*y[6]-ImH13*y[3]+ImH12*y[5])/i;
-  k[i*n+8]=(-0.5*gamma_2*y[8]+(detuning_ac-detuning_ab)*y[7]+ReH13*y[3]+ReH12*y[5]+ImH13*y[4]+ImH12*y[6])/i;
-   
+  k[i*n]  =(-gamma_a*y[0]-(ReH12*y[4]+ReH13*y[6]))/i;
+  k[i*n+1]=(gamma_ab*y[0]+(ReH12*y[4]))/i;
+  k[i*n+2]=(gamma_ac*y[0]+(ReH13*y[6]))/i;
+  k[i*n+3]=(-0.5*gamma_a*y[3]+detuning_ac*y[4]-0.5*ReH13*y[8])/i;
+  k[i*n+4]=(-0.5*gamma_a*y[4]-detuning_ac*y[3]+0.5*ReH12*(y[0]-y[1])-0.5*ReH13*y[7])/i;
+  k[i*n+5]=(-0.5*gamma_a*y[5]+detuning_ab*y[6]+0.5*ReH12*y[8])/i;
+  k[i*n+6]=(-0.5*gamma_a*y[6]-detuning_ab*y[5]+0.5*ReH13*(y[0]-y[2])-0.5*ReH12*y[7])/i;
+  k[i*n+7]=( (detuning_ab-detuning_ac)*y[8]+0.5*ReH13*y[4]+0.5*ReH12*y[6])/i;
+  k[i*n+8]=(-(detuning_ab-detuning_ac)*y[7]+0.5*ReH13*y[3]-0.5*ReH12*y[5])/i;
+
 }
 
 void solve(double *result,double &x,int &t)
