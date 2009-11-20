@@ -1,3 +1,10 @@
 #!/bin/bash
 echo "Making: CW-time"
 g++ CW-time-utf8.cpp -o CW-time
+
+## Shared library compilation
+#if [ -f "cw.so" ]; then
+#  rm cw.so
+#fi
+#echo "Making: CW-time shared library"
+#g++ -Wall -Wextra -O -ansi -pedantic -shared -fPIC CW-time-utf8.cpp -o cw.so
