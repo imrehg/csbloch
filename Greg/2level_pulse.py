@@ -83,17 +83,13 @@ def doint(y0, t0, dt, tend, omega):
 
 dt1 = 0.01
 rt1, ry1 = doint(b, 0, dt1, ttotal, omgauss)
-plot(rt1, ry1[:, 0],'b-', label='Ground state, dt = %.2f'%(dt1))
-plot(rt1, ry1[:, 1],'b--', label='Upper state, dt = %.2f'%(dt1))
+plot(rt1, ry1[:, 0],'b-', label='Ground, Gaussian, dt = %.2f'%(dt1))
+plot(rt1, ry1[:, 1],'b--', label='Upper, Gaussian, dt = %.2f'%(dt1))
 
 dt2 = 0.01
 rt2, ry2 = doint(b, 0, dt2, ttotal, omsquare)
-plot(rt2, ry2[:, 0],'r-', label='Ground state, dt = %.2f'%(dt2))
-plot(rt2, ry2[:, 1],'r--', label='Upper state, dt = %.2f'%(dt2))
-#legend(loc = 'best')
+plot(rt2, ry2[:, 0],'r-', label='Ground, square, dt = %.2f'%(dt2))
+plot(rt2, ry2[:, 1],'r--', label='Upper, square, dt = %.2f'%(dt2))
+legend(loc = 'best')
 
-
-#t = linspace(0, 5, 1000)
-#y = omgauss(t)
-#plot(t, y)
 show()
