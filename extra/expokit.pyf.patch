@@ -1,0 +1,18 @@
+--- expokit.pyf.old	2010-03-16 17:23:02.000000000 +0800
++++ expokit.pyf	2010-03-16 17:23:20.000000000 +0800
+@@ -342,5 +342,15 @@
+     end interface 
+ end python module expokit
+ 
++python module __user__routines
++    interface
++        subroutine matvec(n, v, w)
++            integer optional,check(len(v)>=n),depend(v)::n=len(v)
++            double precision dimension(n),intent(in) :: v
++            double precision dimension(n),intent(out) :: w
++        end subroutine matvec
++    end interface
++end python module __user__routines
++
+ ! This file was auto-generated with f2py (version:2).
+ ! See http://cens.ioc.ee/projects/f2py2e/

@@ -1,0 +1,200 @@
+--- expokit.f.old	1999-01-27 11:58:10.000000000 +0800
++++ expokit.f	2010-03-16 17:17:32.000000000 +0800
+@@ -238,7 +238,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          do i = 1,j
+             hij = DDOT( n, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+             call DAXPY( n, -hij, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+@@ -260,7 +260,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1 for the 2-corrected scheme ...
+@@ -1845,7 +1845,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          do i = 1,j
+             hij = DDOT( n, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+             call DAXPY( n, -hij, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+@@ -1867,7 +1867,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1 for the 2-corrected scheme ...
+@@ -2226,7 +2226,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          if ( j.gt.1 )
+      .     call DAXPY(n,-wsp(ih+(j-1)*mh+j-2),wsp(j1v-2*n),1,wsp(j1v),1)
+          hjj = DDOT( n, wsp(j1v-n),1, wsp(j1v),1 )
+@@ -2249,7 +2249,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1 for the 2-corrected scheme ...
+@@ -2614,7 +2614,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          do i = 1,j
+             hij = ZDOTC( n, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+             call ZAXPY( n, -hij, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+@@ -2636,7 +2636,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DZNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1 for the 2-corrected scheme ...
+@@ -3000,7 +3000,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          if ( j.gt.1 )
+      .     call ZAXPY(n,-wsp(ih+(j-1)*mh+j-2),wsp(j1v-2*n),1,wsp(j1v),1)
+          hjj = ZDOTC( n, wsp(j1v-n),1, wsp(j1v),1 )
+@@ -3023,7 +3023,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DZNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1 for the 2-corrected scheme ...
+@@ -3348,7 +3348,7 @@
+  100  if ( t_now.ge.t_out ) goto 500
+ 
+       nmult =  nmult + 1
+-      call matvec( w, wsp(iv) )
++      call matvec(n, w, wsp(iv) )
+       call DAXPY( n, 1.0d0, u,1, wsp(iv),1 )
+       beta = DNRM2( n, wsp(iv),1 )
+       if ( beta.eq.0.0d0 ) goto 500
+@@ -3373,7 +3373,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          do i = 1,j
+             hij = DDOT( n, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+             call DAXPY( n, -hij, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+@@ -3395,7 +3395,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1's for the 3-extended scheme ...
+@@ -3706,7 +3706,7 @@
+  100  if ( t_now.ge.t_out ) goto 500
+ 
+       nmult =  nmult + 1
+-      call matvec( w, wsp(iv) )
++      call matvec(n, w, wsp(iv) )
+       call DAXPY( n, 1.0d0, u,1, wsp(iv),1 )
+       beta = DNRM2( n, wsp(iv),1 )
+       if ( beta.eq.0.0d0 ) goto 500
+@@ -3731,7 +3731,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          if ( j.gt.1 )
+      .     call DAXPY(n,-wsp(ih+(j-1)*mh+j-2),wsp(j1v-2*n),1,wsp(j1v),1)
+          hjj = DDOT( n, wsp(j1v-n),1, wsp(j1v),1 )
+@@ -3754,7 +3754,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1's for the 3-extended scheme ...
+@@ -4076,7 +4076,7 @@
+  100  if ( t_now.ge.t_out ) goto 500
+ 
+       nmult =  nmult + 1
+-      call matvec( w, wsp(iv) )
++      call matvec(n, w, wsp(iv) )
+       call ZAXPY( n, ONE, u,1, wsp(iv),1 )
+       beta = DZNRM2( n, wsp(iv),1 )
+       if ( beta.eq.0.0d0 ) goto 500
+@@ -4101,7 +4101,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          do i = 1,j
+             hij = ZDOTC( n, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+             call ZAXPY( n, -hij, wsp(iv+(i-1)*n),1, wsp(j1v),1 )
+@@ -4123,7 +4123,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DZNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1's for the 3-extended scheme ...
+@@ -4444,7 +4444,7 @@
+  100  if ( t_now.ge.t_out ) goto 500
+ 
+       nmult =  nmult + 1
+-      call matvec( w, wsp(iv) )
++      call matvec(n, w, wsp(iv) )
+       call ZAXPY( n, ONE, u,1, wsp(iv),1 )
+       beta = DZNRM2( n, wsp(iv),1 )
+       if ( beta.eq.0.0d0 ) goto 500
+@@ -4469,7 +4469,7 @@
+       j1v = iv + n
+       do 200 j = 1,m
+          nmult = nmult + 1
+-         call matvec( wsp(j1v-n), wsp(j1v) )
++         call matvec(n, wsp(j1v-n), wsp(j1v) )
+          if ( j.gt.1 )
+      .     call ZAXPY(n,-wsp(ih+(j-1)*mh+j-2),wsp(j1v-2*n),1,wsp(j1v),1)
+          hjj = ZDOTC( n, wsp(j1v-n),1, wsp(j1v),1 )
+@@ -4491,7 +4491,7 @@
+          j1v = j1v + n
+  200  continue
+       nmult = nmult + 1
+-      call matvec( wsp(j1v-n), wsp(j1v) )
++      call matvec(n, wsp(j1v-n), wsp(j1v) )
+       avnorm = DZNRM2( n, wsp(j1v),1 )
+ *
+ *---  set 1's for the 3-extended scheme ...
