@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget http://www.maths.uq.edu.au/expokit/expokit.tar.gz
+wget -c http://www.maths.uq.edu.au/expokit/expokit.tar.gz
 tar -xzvf expokit.tar.gz
 cd expokit/fortran
 
