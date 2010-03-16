@@ -20,3 +20,4 @@ patch -p 0 < ../../expokit.pyf.patch
 f2py -c expokit.pyf expokit.f blas.f lapack.f
 
 # The shiny new "expokit.so" should be ready for you!
+cp expokit.so ../../.
