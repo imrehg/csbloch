@@ -8,41 +8,57 @@ from pylab import *
 from scipy.integrate import ode
 from time import time
 
-## Note: Gauss and Square is very different when d >> 0
+# Level structure:
+#     ---- (3)
+#     /  \
+# ----(1) ----(2)
+
+# Detuning of the two lower levels
 d12 = 0
 
+# Upper level lifetime, detunings and linewidths
 Gt = 1
 d13 = 0
 G31 = 0.9
 d23 = 0
 G32 = Gt - G31
 
+# Initial state vector: starting in (1)
 b = array([[1],[0],[0],[0],[0],[0],[0],[0],[0]])
 
-### Integrate directly
-
+# Time between pulses
 tpulse = 5
 npulse = 5
 
+# Total time
 ttotal = tpulse * npulse
 
+# Strength of pulse on the two transitions
 om0_1 = 2
 om0_2 = 1
+
+# Pulse "length", square
 om0t = 1
 
+# Gaussian pulse are calculation
 omgc = om0t/20
 omgb = om0t/2
 omga = om0_1*om0t / (omgc * sqrt(2*pi))
 
+# put CW area the same as the other two
 om0_1c = om0_1 * om0t / tpulse
 om0_2c = om0_2 * om0t / tpulse
 
 def omconstant(t):
-    ''' Constant Omega '''
+    """ Constant omega:
+    warning: global parameters
+    """
     return (om0_1c, om0_2c)
 
 def omsquare(t):
-    ''' Constant Omega '''
+    """ Square pulse omega
+    warning: global parameters
+    """
     t = mod(t, tpulse)
     if (t < om0t):
         return(om0_1, om0_1)
@@ -50,14 +66,20 @@ def omsquare(t):
         return(0, 0)
 
 def gauss(x, a, b, c):
+    """ Gaussian function """
     return a * exp(-(x-b)**2/(2*c**2))
 
 def omgauss(t):
+    """ Gaussian pulse
+    warning: global parameters
+    """
     t = mod(t, tpulse)
     om = gauss(t, omga, omgb, omgc)
     return (om, om)
 
 def f(t0, y, omega):
+    """ Direct integration
+    """
     y1 = zeros(9)
     om13, om23 = omega(t0)
     Gtot = G31 + G32
@@ -81,6 +103,7 @@ def f(t0, y, omega):
 
 
 def doint(y0, t0, dt, tend, omega):
+    """ Do whole length of direct ingegration """
     r = ode(f).set_integrator('zvode', with_jacobian=False)
     r.set_initial_value(y0, t0).set_f_params(omega)
     rt = array([t0])
@@ -93,6 +116,9 @@ def doint(y0, t0, dt, tend, omega):
 
 
 def fmat(t0, dt, omega):
+    """ Bloch matrix exponential at a certain time for a certain
+    interval length.
+    """
     y1 = zeros(9)
     om13, om23 = omega(t0+dt/2)
     Gtot = G31 + G32
@@ -118,6 +144,7 @@ def fmat(t0, dt, omega):
 
 
 def solveexp(y0, tpulse, npulse, omega):
+    """ Do calculation with matrix exponentials for all pulses """
     obm0 = identity(9)
     pt = linspace(0, om0t, 41)
     dt = pt[1] - pt[0]
@@ -153,7 +180,7 @@ te, ye = solveexp(b, tpulse, npulse, omgauss)
 print "Matrix exponential: %f s" %(time() - start)
 
 
-
+# Plot results
 plot(rt1, ry1[:, 0],'b-', linewidth=2, label='g(1)')
 plot(rt1, ry1[:, 1],'r-', linewidth=2, label='g(2)')
 plot(rt1, ry1[:, 2],'g-', linewidth=2, label='e(3)')
