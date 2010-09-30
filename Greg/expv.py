@@ -51,23 +51,23 @@ def expv(t, A, v, m = 30):
 
         V[0:n, 0] = (1/beta)*w.T.copy()
         for j in xrange(m):
-            p = dot(A, V[:, j]).T
+            p = dot(A, V[:, j])
             # p =  (A * V[:, j])
             for i in xrange(j+1):
-                H[i, j] = dot(V[:,i].T, p)
-                p = p - matrix(H[i,j] * V[:,i]).T
-            s = norm(p)
+                H[i, j] = dot(V[:,i], p.T)
+                p = p - H[i,j] * V[:,i]
+            s = norm(p.T)
             if s < btol:
                    k1 = 0
                    mb = j
                    t_step = t_out-t_now
                    break
             H[j+1,j] = s;
-            V[0:n, j+1] = (1/s)*p.T.copy()
+            V[0:n, j+1] = (1/s)*p.copy()
 
         if k1 != 0: 
             H[m+1,m] = 1;
-            avnorm = norm(dot(A,V[:,m]).T)
+            avnorm = norm(dot(A,V[:, m]).T)
         ireject = 0
         while ireject <= mxrej:
             mx = mb + k1 + 1
