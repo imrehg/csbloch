@@ -1,0 +1,42 @@
+* Ideas
+* Languages
+** Python
+   Very convenient and flexible, but performance is likely to be sub-par compared to the C++ versions.
+   + [-] LAPACK
+	 In python-numeric-ext
+   + [X] PySparse
+	 Sparse matrices, can be the most useful.
+   + [-] OpenOpt
+	 Universal numerical optimization http://openopt.org/
+   + [X] expokit port: Krylov-subspace optimization
+	 Together with PySparse it is actually quite quick. Power of C under the hood.
+** C++
+   Fast but more rigid then Python. Ernie's program is a big hot mess that might have done the job but I don't have fond feelings for.
+   Have to consider if it is worth spending time fixing it up
+   Uses:
+   + LAPACK
+     Matrix calculations
+   + OpenMP
+     Parallel computing
+** Fortran
+   Option to write my own routines in Fortran. Could be fast, Derek used it for everything. Though linking to Python/C can be tedious and sub-optimal.
+   + Expokit
+     Dense and sparse matrix exponentials. But it does not seem to be very quick. If the matrix is large, it could be good, though...
+* Outstanding questions
+  - [ ] Effect of reduced mode-number (while pulse kept the same?)
+	How the CPT would change if the input was filtered by a Fabry-Perot cavity
+  - [ ] Coherence build up time
+  - [ ] Effect of pulse length when overall power is kept the same
+
+* Next Action
+  + Three-level calculation redux
+    - CW case (make it as a unit-test module)
+    - Mode-locked laser
+  + Rubidium calculation redux
+    based on papers, see how it works
+  + Cesium calculation check
+    basic pulsed laser calculation
+  + Include real effects:
+    - finite temperature
+    - collision rate
+    - transit time
