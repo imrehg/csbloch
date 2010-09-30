@@ -115,7 +115,39 @@ def expv(t, A, v, m = 30):
     hump = hump / normv
     return matrix(w).T, err, hump
 
-def spexpv(t, A, v, m = 30):
+def spexpv(t, A, v, tol=1e-7, m = 30):
+    """
+    Sparse matrix exponentiation using the Krylov subspace method.
+    w, err, hump = spexpv(t, A, v, tol=1e-7, m = 30)
+
+    Not calculating the matrix exponential directly but it's effect on a vector:
+    w = expm(tA)v
+
+    Input:
+    ======
+    t : time (can be t<0)
+    A : propagation matrix (in pysparse.spmatrix.ll_mat format)
+    v : initial state vector (in numpy.array format)
+    tol : tolerance
+    m : maximum number of used eigenvalues (if A has dimension larger than m)
+
+    Output:
+    =======
+    w : exp(tA)v vector, in the same format as scipy.linalg.expm
+    err : final error (should be err < tol, or very close to that)
+    hump : max(||exp(sA)||) for s in [0, t], or s in [t, 0] if  t < 0
+           It measures the conditioning of the problem. It is good if hump = 1,
+           wheres poor if hump >> 1.
+
+    The Krylov-subspace calculation has a number of different possible implementations,
+    here the Arnoldi-iteration is used.
+
+    Code is based on expokit and in particular the Matlab implementation,
+    http://www.maths.uq.edu.au/expokit/matlab/expv.m
+    Roger B. Sidje (rbs@maths.uq.edu.au)
+    EXPOKIT: Software Package for Computing Matrix Exponentials.
+    ACM - Transactions On Mathematical Software, 24(1):130-156, 1998
+    """
     n = A.shape[0]
     tol = 1e-7
     m = min([n, m])
@@ -146,6 +178,7 @@ def spexpv(t, A, v, m = 30):
 
     w = v.copy();
     hump = normv;
+    # Arnoldi iteration
     while t_now < t_out:
         nstep += 1
         t_step = min( t_out-t_now, t_new )
@@ -168,6 +201,7 @@ def spexpv(t, A, v, m = 30):
             H[j+1,j] = s;
             V[0:n, j+1] = (1/s)*p.copy()
 
+        # If tolerance level is above threshold (mostly if m < n)
         if k1 != 0:
             H[m+1,m] = 1;
             res = array(zeros(n), dtype=float64)
