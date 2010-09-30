@@ -9,7 +9,7 @@ def norminf(A):
 
 def norm(v):
     """ L2 norm, equivalent to Matlab's norm(v) """
-    return float(sqrt(dot(v.T,v)))
+    return float(sqrt(dot(v[:].T,v[:])))
 
 def expv(t, A, v, m = 30):
     A = matrix(A)
