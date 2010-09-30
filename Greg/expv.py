@@ -149,7 +149,6 @@ def spexpv(t, A, v, tol=1e-7, m = 30):
     ACM - Transactions On Mathematical Software, 24(1):130-156, 1998
     """
     n = A.shape[0]
-    tol = 1e-7
     m = min([n, m])
     anorm = A.norm('inf')
 
