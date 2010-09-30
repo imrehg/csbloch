@@ -1,7 +1,7 @@
 from __future__ import division
 from numpy import *
 from scipy.linalg import expm
-
+from pysparse import spmatrix
 
 def norminf(A):
     """ Infinite norm, equivalent to Matlab's norm(A, 'inf') """
@@ -115,6 +115,110 @@ def expv(t, A, v, m = 30):
     hump = hump / normv
     return matrix(w).T, err, hump
 
+def spexpv(t, A, v, m = 30):
+    n = A.shape[0]
+    tol = 1e-7
+    m = min([n, m])
+    anorm = A.norm('inf')
+
+    mxrej = 10
+    btol  = 1.0e-7
+    gamma = 0.9
+    delta = 1.2;
+    mb    = m
+    t_out   = abs(t);
+    nstep = 0
+    t_new   = 0
+    t_now = 0
+    s_error = 0;
+    rndoff= anorm * finfo(float).eps
+
+    k1 = 2
+    xm = 1/m
+    normv = norm(v)
+    beta = normv
+    fact = (((m+1)/exp(1))**(m+1))*sqrt(2*pi*(m+1))
+    t_new = (1/anorm)*((fact*tol)/(4*beta*anorm))**xm
+    s = 10**(floor(log10(t_new))-1)
+    t_new = ceil(t_new/s)*s
+    sgn = sign(t)
+    nstep = 0
+
+    w = v.copy();
+    hump = normv;
+    while t_now < t_out:
+        nstep += 1
+        t_step = min( t_out-t_now, t_new )
+        V = zeros((n, m+2), float64)
+        H = zeros((m+2, m+2), float64)
+
+        V[0:n, 0] = (1/beta)*w.T.copy()
+        for j in xrange(m):
+            p = array(zeros(n), dtype=float64)
+            A.matvec(V[:, j], p)
+            for i in xrange(j+1):
+                H[i, j] = dot(V[:,i], p.T)
+                p = p - H[i,j] * V[:,i]
+            s = norm(p.T)
+            if s < btol:
+                   k1 = 0
+                   mb = j
+                   t_step = t_out-t_now
+                   break
+            H[j+1,j] = s;
+            V[0:n, j+1] = (1/s)*p.copy()
+
+        if k1 != 0:
+            H[m+1,m] = 1;
+            res = array(zeros(n), dtype=float64)
+            A.matvec(V[:, m], res)
+            avnorm = norm(res)
+        ireject = 0
+        while ireject <= mxrej:
+            mx = mb + k1 + 1
+            F = expm(sgn * t_step * H[:mx, :mx])
+            if k1 == 0:
+                err_loc = btol
+                break
+            else:
+                phi1 = abs( beta*F[m,1] );
+                phi2 = abs( beta*F[m+1,1] * avnorm );
+                if phi1 > 10*phi2:
+                    err_loc = phi2
+                    xm = 1/m
+                elif phi1 > phi2:
+                    err_loc = (phi1*phi2)/(phi1-phi2)
+                    xm = 1/m;
+                else:
+                    err_loc = phi1
+                    xm = 1/(m-1)
+
+            if err_loc <= delta * t_step*tol:
+                break
+            else:
+                t_step = gamma * t_step * (t_step*tol/err_loc)**xm
+                s = 10**(floor(log10(t_step))-1)
+                t_step = ceil(t_step/s) * s
+                if ireject == mxrej:
+                    print 'The requested tolerance is too high.'
+                ireject += 1
+
+        mx = mb + max(0, k1-1) + 1
+        w = dot(V[:, :mx], beta*F[:mx, 0])
+        beta = norm(w)
+        hump = max(hump, beta)
+
+        t_now = t_now + t_step;
+        t_new = gamma * t_step * (t_step*tol/err_loc)**xm;
+        s = 10**(floor(log10(t_new))-1)
+        t_new = ceil(t_new/s) * s
+
+        err_loc = max(err_loc,rndoff)
+        s_error = s_error + err_loc
+
+    err = s_error
+    hump = hump / normv
+    return matrix(w).T, err, hump
 
 if __name__ == "__main__":
     from time import time
