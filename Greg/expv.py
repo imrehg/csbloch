@@ -255,19 +255,36 @@ def spexpv(t, A, v, tol=1e-7, m = 30):
 
 if __name__ == "__main__":
     from time import time
-    rep = 10
-    n = 2
+    rep = 5
+    n = 150
     A = random.rand(n, n)
     # A = matrix([[1., 5., 3.], [-1., 0., 1.], [3., 2., 1.]])
+
+    for i in xrange(n):
+        for j in xrange(n):
+            if (random.randn() > 0.001):
+                A[i, j] = 0.
+
     v = eye(n, 1)
     t = 1
     start = time()
-    for i in xrange(rep):
+    for r in range(rep):
         w, err, hump = expv(t,A,v)
-    print time() - start
-    print err
+    print "Krylov       :", time()-start
+
+    As = spmatrix.ll_mat(n, n)
+    j = range(n)
+    for i in xrange(n):
+        for j in xrange(n):
+            As[i, j] = A[i, j]
+
+    start = time()
+    for r in range(rep):
+        w, err, hump = spexpv(t, As, v)
+    print "Sparse Krylov:", time() - start
+
     start = time()
     for i in xrange(rep):
         w2 = dot(expm(t*A),v)
-    print time() - start
-    print (w2 - w)/w
+    print "Scipy        :", time() - start
+    # print (w2 - w)/w
