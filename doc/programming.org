@@ -1,4 +1,7 @@
 * Ideas
+  + Use the Krylov-subspace method to calculate a time-dependent matrix
+    Ie.: instead of exp(tA)v for t = t0...tn, use A(t) within algorithm
+    Is it possible?
 * Languages
 ** Python
    Very convenient and flexible, but performance is likely to be sub-par compared to the C++ versions.
