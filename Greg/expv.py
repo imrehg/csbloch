@@ -175,7 +175,7 @@ def spexpv(t, A, v, tol=1e-7, m = 30):
     sgn = sign(t)
     nstep = 0
 
-    w = v.copy();
+    w = array(v[:]).T[0]
     hump = normv;
     # Arnoldi iteration
     while t_now < t_out:
@@ -184,7 +184,7 @@ def spexpv(t, A, v, tol=1e-7, m = 30):
         V = zeros((n, m+2), float64)
         H = zeros((m+2, m+2), float64)
 
-        V[0:n, 0] = (1/beta)*w.T.copy()
+        V[0:n, 0] = (1/beta)*w.copy()
         for j in xrange(m):
             p = array(zeros(n), dtype=float64)
             A.matvec(V[:, j], p)
@@ -251,7 +251,7 @@ def spexpv(t, A, v, tol=1e-7, m = 30):
 
     err = s_error
     hump = hump / normv
-    return matrix(w).T, err, hump
+    return array(w), err, hump
 
 if __name__ == "__main__":
     from time import time
