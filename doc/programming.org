@@ -35,6 +35,12 @@
   + Three-level calculation redux
     - CW case (make it as a unit-test module)
     - Mode-locked laser
+  + Automatic generation of matrices
+  + Basic pulsed setup
+    - variable ground state separation, repetition rate multiplier, change laser detuning: 0, Delta/2, Delta
+  + Include Doppler effect:
+    s33(v) + Maxwell-Boltzmann distribution -> fluorescence rate
+  + Randomized detuning: high temperature high collision rate
   + Rubidium calculation redux
     based on papers, see how it works
   + Cesium calculation check
@@ -43,3 +49,9 @@
     - finite temperature
     - collision rate
     - transit time
+* Physics
+** Frequency-space description
+   Derek's "Multiply connected states" paper seems to be very useful for this, just the right setup
+   Could compare: frequency-space cycle-averaged description vs. time-space analytic calculation, they should match
+   Different pulse shape might have role in the mode height calculation
+   Collision rate could be included in this the same way as in the CW CPT paper
