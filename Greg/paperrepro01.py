@@ -78,12 +78,6 @@ def timedomain(args):
     pulsedt = pulsestep[1] - pulsestep[0]
     pulsestep = (pulsestep + pulsedt / 2) - gausstau / 2
 
-    # v = matrix(zeros((9, 1)))
-    # v[0] = 1/2
-    # v[1] = 1/2
-
-    # print pulseoff
-    
     results = zeros((9, npulse+1))
     vt = v0
     for k in xrange(0, 9):
@@ -100,56 +94,17 @@ def timedomain(args):
             vt, e, hump = spexpv(pulsedt, pulseon, vt)
             vt = matrix(vt).T
         v3diff = vt[2] - v3in
-        # print v3diff
         # pulse off
         vt, e, hump = spexpv(pulseofftime, pulseoff, vt)
         vt = matrix(vt).T
         for k in range(0, 9):
             results[k, i+1] = vt[k]
-
-    # if doplot:
-    #     tsteps = array(range(0, npulse+1))*reptime
-
-    #     pl.figure()
-    #     for i in xrange(3):
-    #         pl.plot(tsteps, results[i, :], '-', label="Pop%d"%(i+1))
-    #     pl.legend()
-    #     pl.title('Population')
-
-    #     pl.figure()
-    #     for i in xrange(3):
-    #         pl.plot(tsteps, results[i+3, :], '-', label="ChR%d"%(i+1))
-    #     pl.legend()
-    #     pl.title('Coherence - Real')
-
-    #     pl.figure()
-    #     for i in xrange(3):
-    #         pl.plot(tsteps, results[i+6, :], '-', label="ChI%d"%(i+1))
-    #     pl.legend()
-    #     pl.title('Coherence - Imaginary')
-    #     pl.show()
-
-    # return results[0:9, -1]
     return results
 
 try:
     import multiprocessing as processing
 except:
     import processing
-
-# #
-# # Function run by worker processes
-# #
-
-# def worker(input, output):
-#     for func, args in iter(input.get, 'STOP'):
-#         result = calculate(func, args)
-#         output.put(result)
-
-# def calculate(func, args):
-#     res = func(*args)
-#     return res[2]
-
 
 if __name__ == "__main__":
 
@@ -336,131 +291,3 @@ if __name__ == "__main__":
 
 
     pl.show()
-    
-
-    # det23 = 0 * Gt
-    # omega23 = 5 * Gt
-    # TASKS = [(mnames, v0, det13, det23, omega23, gausstau, gausstheta, gausssigma, trep, npulse, Gt, False) for det13 in detunelist]
-    # out = pool.map(timedomain, TASKS)
-    # results = zeros((len(detunelist), 10))
-    # for i, res in enumerate(out):
-    #     results[i, 0] = detunelist[i]
-    # for k in xrange(9):
-    #         results[i, k+1] = res[k][-1]
-    #     pl.plot(results[:, 0], results[:, 3], linestyles[li], label="%d"%npulse)
-    # pool.terminate()
-    # pl.legend()
-    # pl.xlim([detunelist[0], detunelist[-1]])
-    # pl.show()
-
-    ########################  Good
-    # Gt = 1
-    # G31 = Gt * 0.5
-    # G32 = Gt - G31
-    # Gtot = G31 + G32
-
-    # matrices = genmat([G31, G32])
-    # split12 = 1825.9
-    # det13 = -split12/4
-    # tau = 5e-6
-    # maxpow = 300
-    # npulse = 1500
-
-    # maxpowlist = [10, 20, 40, 80, 160, 320, 640, 1280]
-    # series = 5
-
- 
-    
-    # treplist = linspace(1.5*2*pi, 3.5*2*pi, 301)
-    # NUMBER_OF_PROCESSES = processing.cpu_count()
-
-    # start = time()
-    # pool = processing.Pool(processes=NUMBER_OF_PROCESSES)  
-    # # result = pool.apply_async(timedomain, (mnames, split12, det13, tau, 6*pi/split12,  maxpow, npulse, Gtot, False))    
-
-    # n = 0
-    # for maxpow in maxpowlist:
-    #     print "%d / %d : %d" %(n+1, len(maxpowlist), maxpow)
-    #     n += 1
-    #     TASKS = [(mnames, split12, det13, tau, trep/split12,  maxpow, npulse, Gtot, False) for trep in treplist]
-    #     out = pool.map(timedomain, TASKS)
-    #     results = zeros((len(treplist), 10))
-    #     for i, res in enumerate(out):
-    #         results[i, 0] = treplist[i]/2/pi
-    #         results[i, 1:10] = res[0:9]
-    #     filename = "powercalc%02d_%04d" %(series, maxpow)
-    #     savetxt("%s.txt" %filename, results)
-    #     for i in xrange(1, 4):
-    #         pl.plot(results[:, 0], results[:, i])
-    #     pl.savefig("%s.png" %filename)
-    #     pl.clf()
-    # fin = time() - start
-    # print "Totaltime: %f" %fin
-    # pool.terminate()
-    ########################  End: Good
-
-
-
-    # print results
-    # for i in xrange(1, 4):
-    #     pl.plot(results[:, 0], results[:, i])
-    # pl.show()
-
-
-    # print split12, det13, 10/split12
-    # series = True
-    # series = False
-    # fignum = 2
-
-
-    # if series:
-    #     reptime = 6.5*pi/split12
-    #     pops = timedomain(mnames, split12, det13, tau, reptime, maxpow, npulse, upperlife=Gtot, doplot=True)
-    # else:
-    #     treplist = linspace(3.5*pi, 4.5*pi, 201)
-    #     pop1 = array([])
-    #     pop2 = array([])
-    #     pop3 = array([])
-    #     coh1 = array([])
-    #     coh2 = array([])
-    #     coh3 = array([])
-    #     cohi1 = array([])
-    #     cohi2 = array([])
-    #     cohi3 = array([])
-    #     for trep in treplist:
-    #         print trep
-    #         pops = timedomain(matrices, split12, det13, tau, trep/split12, maxpow, npulse, upperlife=Gtot)
-    #         pop1 = append(pop1, pops[0])
-    #         pop2 = append(pop2, pops[1])
-    #         pop3 = append(pop3, pops[2])
-    #         coh1 = append(coh1, pops[3])
-    #         coh2 = append(coh2, pops[4])
-    #         coh3 = append(coh3, pops[5])
-    #         cohi1 = append(cohi1, pops[6])
-    #         cohi2 = append(cohi2, pops[7])
-    #         cohi3 = append(cohi3, pops[8])
-    #     treplist = treplist/2/pi
-    #     pl.figure()
-    #     # pl.title("Population")
-    #     pl.plot(treplist, pop1, label="Pop |1>")
-    #     pl.plot(treplist, pop2, label="Pop |2>")
-    #     pl.plot(treplist, pop3, label="Pop |3>")
-    #     pl.xlabel('Repetition rate divider')
-    #     pl.ylabel('Population')
-    #     pl.legend()
-    #     pl.savefig("reprate%02d_1.pdf" %fignum)
-    #     pl.figure()
-    #     pl.title("Real coherence")
-    #     pl.plot(treplist, coh1, label="1")
-    #     pl.plot(treplist, coh2, label="2")
-    #     pl.plot(treplist, coh3, label="3")
-    #     pl.legend()
-    #     pl.savefig("reprate%02d_2.pdf" %fignum)
-    #     pl.figure()
-    #     pl.title("Imaginary coherence")
-    #     pl.plot(treplist, cohi1, label="1")
-    #     pl.plot(treplist, cohi2, label="2")
-    #     pl.plot(treplist, cohi3, label="3")
-    #     pl.legend()
-    #     pl.savefig("reprate%02d_3.pdf" %fignum)
-    #     pl.show()
