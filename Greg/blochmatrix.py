@@ -92,3 +92,117 @@ def blochlambda(G, G12=0, gl=[0, 0]):
     laser12_det[6, 3] = -1
 
     return bloch_atomic, laser1_pow, laser1_det, laser2_pow, laser2_det, laser12_det
+
+
+def blochd1():
+    """
+    Cesium D1 line @ B=0
+    Simulation reduces to 4 levels F={3,4} -> F'={3,4}
+    """
+
+    G = [0, 0, 1, 1]
+    Jlower = 1/2
+    Jupper = 1/2
+    I = 7/2
+    Flower = [3, 4]
+    Fupper = [3, 4]
+    nlev = len(Flower) + len(Fupper)
+    # Decay matrix with branching
+    A = np.zeros((nlev, nlev))
+    off = len(Flower)
+    # branching ratio
+    for i in xrange(len(Fupper)):
+        for f in xrange(len(Flower)):
+            prob = (2*Jupper+1)*(2*Flower[f]+1)*quantum.sixj(Jupper, Jlower, 1, Flower[f], Fupper[i], I)**2
+            A[f, i+off] = prob
+    # print A
+
+    M = np.zeros((nlev, nlev))
+    off = len(Flower)
+    # branching ratio
+    for i in xrange(len(Flower)):
+        for f in xrange(len(Fupper)):
+            prob = np.sqrt((2*Jlower+1)*(2*Fupper[f]+1)*quantum.sixj(Jlower, Jupper, 1, Fupper[f], Flower[i], I)**2)
+            M[i, f+off] = prob
+            M[f+off, i] = prob
+    print M
+
+    # The diagonal states
+    # Helpers
+    dg = []
+    xlook = {}
+    ylook = {}
+    ymulti = {}
+    n = 0
+    for i in xrange(nlev-1):
+        for j in xrange(i+1, nlev):
+            dg += [[i, j]]
+            xlook["%d:%d"%(i,j)] = n
+            xlook["%d:%d"%(j,i)] = n
+            ylook["%d:%d"%(i,j)] = n
+            ylook["%d:%d"%(j,i)] = n
+            n += 1
+    ldg = len(dg)
+
+    bloch_atomic = ll_mat(16, 16, 20)
+    for i in xrange(nlev):
+        bloch_atomic[i, i] += -G[i]
+    for i in xrange(nlev):
+        for j in xrange(nlev):
+            bloch_atomic[j, i] += A[j, i]
+
+    for i in xrange(ldg):
+        bloch_atomic[i+nlev, i+nlev] += -(G[dg[i][0]] + G[dg[i][1]])/2
+        bloch_atomic[i+nlev+ldg, i+nlev+ldg] += -(G[dg[i][0]] + G[dg[i][1]])/2
+
+    laser_pow = ll_mat(16, 16, 20)
+    for j in xrange(nlev):
+        for l in xrange(nlev):
+            if l != j:
+                ypos = nlev + ldg + ylook["%d:%d"%(l, j)]
+                mul = 1 if l>j else -1
+                laser_pow[j, ypos] += mul*2*M[l, j]
+
+    for j in xrange(nlev-1):
+        for k in xrange(j+1, nlev):
+            xjk = nlev + xlook["%d:%d"%(j, k)]
+            for l in xrange(nlev):
+                if l !=k:
+                    ylk = nlev + ldg + ylook["%d:%d" %(l, k)]
+                    scale = 1 if l < k else -1
+                    laser_pow[xjk, ylk] += -M[j, l]*scale
+                if j !=l:
+                    yjl = nlev + ldg + ylook["%d:%d" %(j, l)]
+                    scale = 1 if j < l else -1
+                    laser_pow[xjk, yjl] += M[l, k]*scale
+
+    for j in xrange(nlev-1):
+        for k in xrange(j+1, nlev):
+            yjk = nlev + ldg + ylook["%d:%d"%(j, k)]
+            for l in xrange(nlev):
+                if l !=k:
+                    xlk = nlev + xlook["%d:%d" %(l, k)]
+                    laser_pow[yjk, xlk] += M[j, l]
+                else:
+                    laser_pow[yjk, l] += M[j, l]
+
+                if j !=l:
+                    xjl = nlev + xlook["%d:%d" %(j, l)]
+                    laser_pow[yjk, xjl] += -M[l, k]
+                else:
+                    laser_pow[yjk, l] += -M[l, k]
+
+    return (bloch_atomic, laser_pow,)
+
+def laser_det(d):
+    nlev = 4
+    ldg = 3*2
+    laser_det = ll_mat(16, 16, 5)
+    ## 01, 02, 03, 12, 13, 23
+    d01 = -2009.3
+    d23 = -255.23
+    detunings = [d01, d, d+d23, d-d01, d-d01+d23, d23]
+    for i in xrange(ldg):
+        laser_det[i+nlev, i+nlev+ldg] = detunings[i]
+        laser_det[i+nlev+ldg, i+nlev] = -detunings[i]
+    return laser_det
