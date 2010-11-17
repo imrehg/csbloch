@@ -19,8 +19,10 @@ Compared to the paper: (abc) -> (312)
 
 from __future__ import division
 from pysparse.spmatrix import *
+import numpy as np
+import physicspy.quantum as quantum
 
-def blochlambda(G):
+def blochlambda(G, G12=0, gl=[0, 0]):
     """
     genmat(G)
     Generate the parts of the Bloch-equations to use in the
@@ -29,6 +31,9 @@ def blochlambda(G):
 
     Input:
     G = [G31, G32] the upper level decay rate to the two ground states
+    G12 = decoherence between the ground states (default = 0)
+    gl = laser linewidth for laser 13 and 23 (default = [0 0])
+
 
     Output:
     bloch_atomic, laser1_pow, laser1_det, laser2_pow, laser2_det, laser12_det
@@ -44,6 +49,17 @@ def blochlambda(G):
     cdecay = [4, 5, 7, 8]
     for i in cdecay:
         bloch_atomic[i, i] = -Gtot / 2 
+    # Ground state decoherence
+    bloch_atomic[3, 3] += -G12 / 2
+    bloch_atomic[6, 6] += -G12 / 2
+    # Laser linewidths
+    bloch_atomic[3, 3] += -(gl[0] + gl[1]) / 2
+    bloch_atomic[4, 4] += -gl[0] / 2
+    bloch_atomic[5, 5] += -gl[1] / 2
+    bloch_atomic[6, 6] += -(gl[0] + gl[1]) / 2
+    bloch_atomic[7, 7] += -gl[0] / 2
+    bloch_atomic[8, 8] += -gl[1] / 2
+
 
     laser1_pow = ll_mat(9, 9, 10)
     laser1_pow[0, 7] = 1
