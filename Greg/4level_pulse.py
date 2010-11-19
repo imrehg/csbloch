@@ -64,7 +64,7 @@ def main():
     # out = pool.map(timedomain, TASKS)
     # print out[0]
     # print bloch.laser_det(255)
-    omega = 1
+    omega = 2*pi
     delta = 0
     maxt = 10
     params = [mnames, maxt, omega, bloch.laser_det, delta]
