@@ -115,7 +115,6 @@ def blochd1():
         for f in xrange(len(Flower)):
             prob = (2*Jupper+1)*(2*Flower[f]+1)*quantum.sixj(Jupper, Jlower, 1, Flower[f], Fupper[i], I)**2
             A[f, i+off] = prob
-    # print A
 
     M = np.zeros((nlev, nlev))
     off = len(Flower)
@@ -125,7 +124,15 @@ def blochd1():
             prob = np.sqrt((2*Jlower+1)*(2*Fupper[f]+1)*quantum.sixj(Jlower, Jupper, 1, Fupper[f], Flower[i], I)**2)
             M[i, f+off] = prob
             M[f+off, i] = prob
-    print M
+
+    # ### Temporary
+    # for i in xrange(4):
+    #     M[i,3] = 0
+    #     M[3,i] = 0
+    # for i in xrange(4):
+    #     for j in xrange(4):
+    #         M[i, j] = np.sign(M[i, j])*0.5
+    # ###
 
     # The diagonal states
     # Helpers
@@ -146,12 +153,24 @@ def blochd1():
 
     bloch_atomic = ll_mat(16, 16, 20)
     for i in xrange(nlev):
+        # ### Temporary:
+        # if i == 3:
+        #     continue
+        # ###
         bloch_atomic[i, i] += -G[i]
     for i in xrange(nlev):
         for j in xrange(nlev):
+            # ### Temporary:
+            # if (i == 3) | (j == 3):
+            #     continue
+            # ###
             bloch_atomic[j, i] += A[j, i]
 
     for i in xrange(ldg):
+        # ### Temporary:
+        # if i in [2, 3, 5]:
+        #     continue
+        # ###
         bloch_atomic[i+nlev, i+nlev] += -(G[dg[i][0]] + G[dg[i][1]])/2
         bloch_atomic[i+nlev+ldg, i+nlev+ldg] += -(G[dg[i][0]] + G[dg[i][1]])/2
 
@@ -201,7 +220,8 @@ def laser_det(d):
     ## 01, 02, 03, 12, 13, 23
     d01 = -2009.3
     d23 = -255.23
-    detunings = [d01, d, d+d23, d-d01, d-d01+d23, d23]
+    # detunings = np.array([d01, d, d+d23, d-d01, d-d01+d23, d23])*2*np.pi
+    detunings = np.array([d01, d, d+d23, d-d01, d-d01+d23, d23])
     for i in xrange(ldg):
         laser_det[i+nlev, i+nlev+ldg] = detunings[i]
         laser_det[i+nlev+ldg, i+nlev] = -detunings[i]
