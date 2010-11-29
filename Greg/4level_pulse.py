@@ -70,7 +70,7 @@ def pulsescalc(args):
         globals()[name] = ll_mat_from_mtx(name)
     # bloch_atomic, laser_pow = matrices
 
-    print trep
+    print "Reptime: %f, detuning: %f" %(trep, delta)
 
     # Between pulses: CW laser is off
     pulseoff = bloch_atomic.copy()
@@ -124,7 +124,7 @@ def repratescan(treplist, pool, savefigs=None, **kargs):
               kargs['detu'], kargs['gausspulse'], kargs['gausssigma'],
               kargs['gausstheta'], kargs['gausstau'], 30, trep, kargs['npulse']) for trep in treplist]
     try:
-        out = pool.map_async(pulsescalc, TASKS).get(1000)
+        out = pool.map_async(pulsescalc, TASKS).get(999999)
     except KeyboardInterrupt:
         pool.terminate()
         sys.exit(0)
@@ -141,6 +141,7 @@ def repratescan(treplist, pool, savefigs=None, **kargs):
     pl.plot(results[:, 0]*timescale, results[:, 3]+results[:, 4], 'k--', label='total')
     pl.legend(loc='best')
     pl.title('Upper state populations')
+    pl.xlim([results[0,0]*timescale, results[-1,0]*timescale])
     if savefigs:
         figname = "%s_pop.png" %savefigs
         pl.savefig(figname)
@@ -153,6 +154,54 @@ def repratescan(treplist, pool, savefigs=None, **kargs):
         pl.plot(results[:,0]*timescale, results[:, i+1], ':', label='Imag')
     pl.legend(loc='best')
     pl.title('Ground state coherence')
+    pl.xlim([results[0,0]*timescale, results[-1,0]*timescale])
+    if savefigs:
+        figname = "%s_coh.png" %savefigs
+        pl.savefig(figname)
+        # catchimgup("Coherence", "%s" %figname)
+
+def detuscan(detulist, pool, savefigs=None, **kargs):
+
+
+    # # mnames, v, laser_det, delta, pulsefunc, pulseshape, pulsearea, pulsetotaltime, pulsepoints, trep, npulse = args
+
+    TASKS = [(kargs['mnames'], kargs['v'], bloch.laser_det,
+              detu, kargs['gausspulse'], kargs['gausssigma'],
+              kargs['gausstheta'], kargs['gausstau'], 30, kargs['trep'], kargs['npulse']) for detu in detulist]
+    try:
+        out = pool.map_async(pulsescalc, TASKS).get(999999)
+    except KeyboardInterrupt:
+        pool.terminate()
+        sys.exit(0)
+    results = zeros((len(detulist), 17))
+    for i, res in enumerate(out):
+            results[i, 0] = detulist[i]
+            for k in xrange(16):
+                results[i, k+1] = res[k][-1]
+    if savefigs:
+        filename = "%s_results.txt" %savefigs
+        savetxt(filename, results)
+
+    pl.figure()
+    for i in xrange(2,4):
+        pl.plot(results[:, 0], results[:, i+1], '.-', label="|%d>"%i)
+    pl.plot(results[:, 0], results[:, 3]+results[:, 4], 'k--', label='total')
+    pl.legend(loc='best')
+    pl.title('Upper state populations')
+    pl.xlim([results[0,0], results[-1,0]])
+    if savefigs:
+        figname = "%s_pop.png" %savefigs
+        pl.savefig(figname)
+        # catchimgup("Population", "%s" %figname)
+
+    pl.figure()
+    for i in [4]:
+        pl.plot(results[:,0], results[:, i+1], '--', label='Real')
+    for i in [10]:
+        pl.plot(results[:,0], results[:, i+1], ':', label='Imag')
+    pl.legend(loc='best')
+    pl.title('Ground state coherence')
+    pl.xlim([results[0,0], results[-1,0]          ])
     if savefigs:
         figname = "%s_coh.png" %savefigs
         pl.savefig(figname)
@@ -259,7 +308,7 @@ def main():
     timescale = 1/G
     tauP = 1e-12 / timescale
     gausssigma = tauP * sqrt(pi/(2*log(2)))
-    gausstheta = np.pi/10
+    gausstheta = 1/100
     gausstau = 4 * gausssigma
 
 
@@ -269,11 +318,22 @@ def main():
     trep = 80.5/(d01/2/np.pi)
     # print("trep %f" %trep)
     # print("gtau %f" %gausstau)
-    npulse = 100
+    npulse = 1200
 
-    dt = 0.5
-    ntrep = 301
+    dt = 0.1
+    ntrep = 151
+    ndetu = 301
 
+    trep = 1/80e6/timescale
+    detulist = 2*pi*linspace(-1, 1, ndetu)*80e6/G
+    detuscan(detulist, pool=pool, savefigs="4level_detu_f3", mnames=mnames, v=v,
+                gausspulse=gausspulse, gausssigma=gausssigma,
+                gausstheta=gausstheta, gausstau=gausstau, trep=trep,
+                npulse=npulse)
+    pl.show()
+
+
+    # ##### Timedomain
     # pulseargs = (mnames, v, bloch.laser_det, detu, gausspulse, gausssigma, gausstheta, gausstau, 30, trep, npulse)
     # res = pulsescalc(pulseargs)
     # for i in [0, 1, 2, 3]:
@@ -283,23 +343,37 @@ def main():
     # pl.show()
     # sys.exit(0)
 
-    treplist = linspace(80-dt, 80+dt, ntrep)/(d01/2/np.pi)
-    detu = 0
-    repratescan(treplist, pool=pool, savefigs="4level_f3", mnames=mnames, v=v,
-                detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
-                gausstheta=gausstheta, gausstau=gausstau,
-                npulse=npulse)
-    detu = -d01/2
-    repratescan(treplist, pool=pool, savefig="4level_f34", mnames=mnames, v=v,
-                detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
-                gausstheta=gausstheta, gausstau=gausstau,
-                npulse=npulse)
-    detu = -d01
-    repratescan(treplist, pool=pool, savefig="4level_f4", mnames=mnames, v=v,
-                detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
-                gausstheta=gausstheta, gausstau=gausstau,
-                npulse=npulse)
-    pl.show()
+
+    # ##### Repratespectro
+    # treplist = linspace(80-dt, 80+dt, ntrep)/(d01/2/np.pi)
+    # # on resonance with F=3->F'4
+    # detu = 0
+    # repratescan(treplist, pool=pool, savefigs="4level_f3", mnames=mnames, v=v,
+    #             detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
+    #             gausstheta=gausstheta, gausstau=gausstau,
+    #             npulse=npulse)
+
+    # # halfway between F=3,4
+    # detu = -d01/2
+    # repratescan(treplist, pool=pool, savefig="4level_f34", mnames=mnames, v=v,
+    #             detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
+    #             gausstheta=gausstheta, gausstau=gausstau,
+    #             npulse=npulse)
+
+    # # on resonance with F=4->F'=3
+    # detu = -d01
+    # repratescan(treplist, pool=pool, savefig="4level_f4", mnames=mnames, v=v,
+    #             detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
+    #             gausstheta=gausstheta, gausstau=gausstau,
+    #             npulse=npulse)
+
+    # # Detuning with half-gap with respect to the repetition rate
+    # detu = -d01/80/2
+    # repratescan(treplist, pool=pool, savefig="4level_half", mnames=mnames, v=v,
+    #             detu=detu, gausspulse=gausspulse, gausssigma=gausssigma,
+    #             gausstheta=gausstheta, gausstau=gausstau,
+    #             npulse=npulse)
+    # pl.show()
 
     # detulist = np.linspace(-300, 0, 41)
 
