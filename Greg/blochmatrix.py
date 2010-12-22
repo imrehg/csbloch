@@ -369,3 +369,33 @@ def laser_detd2(d):
         detu_matrix[i+nlev+ncross, i+nlev] = -detunings[i]
 
     return detu_matrix
+
+def detuning_matrix(det, levels):
+    """ Generic detuning matrix
+    detuning_matrix(det, levels)
+
+    =Input=
+    det : the value of detuning, in whatever unit used for the original matrix
+    levels: [nlower, nupper] number of lower and upper hyperfine levels (currently only
+            two fine structure levels are supported)
+
+    =Output=
+    The detuning matrix in the used Bloch-equations format where the list of elements
+    follows (x11,..,xnn,x12,x13,..,y12,y13...)
+    xii: populations, xij/yij: real/imaginary coherence
+
+    Using the output:
+    original.shift(1, detuning_matrix(det, levels))
+    """
+    total = [0]*levels[0] + [d]*levels[1]
+    nlev = levels[0] + levels[1];
+    ncross = int(nlev*(nlev-1)/2)
+    detunings = []
+    for i in xrange(nlev-1):
+        for j in xrange(i+1, nlev):
+            detunings += [total[j] - total[i]]
+    detu_matrix = ll_mat(nlev*nlev, nlev*nlev, nlev*2)
+    for i in xrange(ncross):
+        detu_matrix[i+nlev, i+nlev+ncross] = detunings[i]
+        detu_matrix[i+nlev+ncross, i+nlev] = -detunings[i]
+    return detu_matrix
