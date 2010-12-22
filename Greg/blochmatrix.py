@@ -228,13 +228,16 @@ def laser_det(d):
     return laser_det
 
 
-def blochd2():
+def blochd2(broad=None):
     """
     Cesium D1 line @ B=0
     Simulation reduces to 4 levels F={3,4} -> F'={3,4}
     """
 
-    G = [0, 0, 1, 1, 1, 1]
+    if not broad:
+        G = [0, 0, 1, 1, 1, 1]
+    else:
+        G = [0, 0, broad+1, broad+1, broad+1, broad+1]
     Jlower = 1/2
     Jupper = 3/2
     I = 7/2
