@@ -251,7 +251,7 @@ def blochd2(broad=None):
     for i in xrange(len(Fupper)):
         for f in xrange(len(Flower)):
             prob = (2*Jupper+1)*(2*Flower[f]+1)*quantum.sixj(Jupper, Jlower, 1, Flower[f], Fupper[i], I)**2
-            A[f, i+off] = prob
+            A[f, i+off] = prob*G[Fupper[i]]
 
     M = np.zeros((nlev, nlev))
     off = len(Flower)
